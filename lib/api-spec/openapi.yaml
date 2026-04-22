@@ -1,0 +1,343 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: readingBuddy
+    description: Reading Buddy operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /reading-buddy/books:
+    get:
+      operationId: listReadingBuddyBooks
+      tags: [readingBuddy]
+      summary: List books
+      responses:
+        "200":
+          description: Books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+    post:
+      operationId: createReadingBuddyBook
+      tags: [readingBuddy]
+      summary: Add a book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookRequest"
+      responses:
+        "201":
+          description: Created book
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+  /reading-buddy/books/{bookId}:
+    patch:
+      operationId: updateReadingBuddyBook
+      tags: [readingBuddy]
+      summary: Update a book
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBookRequest"
+      responses:
+        "200":
+          description: Updated book
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+  /reading-buddy/sessions:
+    post:
+      operationId: createReadingBuddySession
+      tags: [readingBuddy]
+      summary: Log reading session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReadingSessionRequest"
+      responses:
+        "201":
+          description: Created reading session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadingSession"
+  /reading-buddy/goals:
+    get:
+      operationId: getReadingBuddyGoals
+      tags: [readingBuddy]
+      summary: Get reading goals table
+      responses:
+        "200":
+          description: Reading goals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReadingGoalRow"
+  /reading-buddy/stats:
+    get:
+      operationId: getReadingBuddyStats
+      tags: [readingBuddy]
+      summary: Get reading stats
+      responses:
+        "200":
+          description: Reading stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadingStats"
+  /reading-buddy/activity:
+    get:
+      operationId: getReadingBuddyActivity
+      tags: [readingBuddy]
+      summary: Get recent reading activity
+      responses:
+        "200":
+          description: Recent activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReadingActivity"
+  /reading-buddy/settings:
+    get:
+      operationId: getReadingBuddySettings
+      tags: [readingBuddy]
+      summary: Get settings
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadingSettings"
+    patch:
+      operationId: updateReadingBuddySettings
+      tags: [readingBuddy]
+      summary: Update settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSettingsRequest"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadingSettings"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    BookStatus:
+      type: string
+      enum: [currently_reading, completed]
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        author:
+          type: string
+        totalPages:
+          type: integer
+        currentPage:
+          type: integer
+        status:
+          $ref: "#/components/schemas/BookStatus"
+        startedAt:
+          type: string
+          format: date
+        completedAt:
+          type:
+            - string
+            - "null"
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, title, author, totalPages, currentPage, status, startedAt, completedAt, createdAt]
+    CreateBookRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        author:
+          type: string
+          minLength: 1
+        totalPages:
+          type: integer
+          minimum: 1
+        currentPage:
+          type: integer
+          minimum: 0
+      required: [title, author, totalPages]
+    UpdateBookRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        author:
+          type: string
+          minLength: 1
+        totalPages:
+          type: integer
+          minimum: 1
+        currentPage:
+          type: integer
+          minimum: 0
+        status:
+          $ref: "#/components/schemas/BookStatus"
+    CreateReadingSessionRequest:
+      type: object
+      properties:
+        bookId:
+          type: integer
+        pagesRead:
+          type: integer
+          minimum: 1
+        minutesRead:
+          type: integer
+          minimum: 1
+        loggedAt:
+          type: string
+          format: date-time
+      required: [bookId, pagesRead]
+    ReadingSession:
+      type: object
+      properties:
+        id:
+          type: integer
+        bookId:
+          type: integer
+        bookTitle:
+          type: string
+        pagesRead:
+          type: integer
+        minutesRead:
+          type:
+            - integer
+            - "null"
+        loggedAt:
+          type: string
+          format: date-time
+      required: [id, bookId, bookTitle, pagesRead, minutesRead, loggedAt]
+    ReadingGoalRow:
+      type: object
+      properties:
+        bookId:
+          type: integer
+        bookName:
+          type: string
+        pagesCompleted:
+          type: integer
+        totalPages:
+          type: integer
+        estimatedDateCompleted:
+          type: string
+          format: date
+      required: [bookId, bookName, pagesCompleted, totalPages, estimatedDateCompleted]
+    ReadingStats:
+      type: object
+      properties:
+        pagesToday:
+          type: integer
+        dailyGoalPages:
+          type: integer
+        activeBooks:
+          type: integer
+        completedBooks:
+          type: integer
+        currentStreakDays:
+          type: integer
+        totalPagesRead:
+          type: integer
+        averagePagesPerDay:
+          type: number
+      required: [pagesToday, dailyGoalPages, activeBooks, completedBooks, currentStreakDays, totalPagesRead, averagePagesPerDay]
+    ReadingActivity:
+      type: object
+      properties:
+        id:
+          type: integer
+        bookTitle:
+          type: string
+        pagesRead:
+          type: integer
+        loggedAt:
+          type: string
+          format: date-time
+      required: [id, bookTitle, pagesRead, loggedAt]
+    ReadingSettings:
+      type: object
+      properties:
+        id:
+          type: integer
+        dailyGoalPages:
+          type: integer
+        reminderTime:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, dailyGoalPages, reminderTime, updatedAt]
+    UpdateSettingsRequest:
+      type: object
+      properties:
+        dailyGoalPages:
+          type: integer
+          minimum: 1
+        reminderTime:
+          type: string
