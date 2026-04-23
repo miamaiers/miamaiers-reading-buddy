@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", router);
 
 if (process.env.NODE_ENV === "production") {
-  const staticDir = path.resolve(__dirname, "../../reading-buddy/dist");
+  const staticDir = path.resolve(__dirname, "../../reading-buddy/dist/public");
   app.use(express.static(staticDir));
   app.get("*", (_req, res) => {
     res.sendFile(path.join(staticDir, "index.html"));
