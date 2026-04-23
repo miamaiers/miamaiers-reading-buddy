@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - miamaiers-reading-buddy
+name: Build and deploy Node.js app to Azure Web App - miamaiers-reading-buddy-4
 
 on:
   push:
@@ -55,7 +55,7 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'miamaiers-reading-buddy'
+          app-name: 'miamaiers-reading-buddy-4'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5B3B2B98C25541AFBD981BF6716902D9 }}
           startup-command: 'node artifacts/api-server/dist/index.mjs'
