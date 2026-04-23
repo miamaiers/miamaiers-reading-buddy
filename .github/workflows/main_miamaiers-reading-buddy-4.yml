@@ -57,5 +57,5 @@ jobs:
         with:
           app-name: 'miamaiers-reading-buddy-4'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5B3B2B98C25541AFBD981BF6716902D9 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_18CDC24066044614812DA2758B69849D }}
           startup-command: 'node artifacts/api-server/dist/index.mjs'
